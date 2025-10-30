@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.documents-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.page-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.page-subtitle {
+    text-align: center;
+    color: var(--gray);
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+}
+.table-docs {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+.table-docs th, .table-docs td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+.table-docs th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+.table-docs tr:last-child td {
+    border-bottom: none;
+}
+.file-actions a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 600;
+}
+.file-actions a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .documents-container { padding: 0 10px; }
+    .page-title { font-size: 2rem; }
+    .table-docs th, .table-docs td { padding: 10px; font-size: 0.92rem; }
+}
+</style>
+
+<div class="documents-container">
+    <h1 class="page-title">My Documents</h1>
+    <p class="page-subtitle">All your uploaded documents are listed below for easy access and management.</p>
+    {% if files and files|length > 0 %}
+    <table class="table-docs">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Modified</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for file in files %}
+            <tr>
+                <td>{{ file.name }}</td>
+                <td>
+                    {% if file.icon == 'file-pdf' %}
+                        <i class="fas fa-file-pdf" style="color: #e53935;"></i> PDF
+                    {% elif file.icon == 'file-word' %}
+                        <i class="fas fa-file-word" style="color: #039be5;"></i> Word
+                    {% elif file.icon == 'file-alt' %}
+                        <i class="fas fa-file-alt" style="color: #43a047;"></i> Text
+                    {% else %}
+                        <i class="fas fa-file"></i> Other
+                    {% endif %}
+                </td>
+                <td>{{ format_file_size(file.size) }}</td>
+                <td>{{ format_timestamp(file.modified) }}</td>
+                <td class="file-actions">
+                    <a href="{{ url_for('view_file', filename=file.name) }}" target="_blank"><i class="fas fa-eye"></i> View</a>
+                    <a href="{{ url_for('download_file', filename=file.name) }}"><i class="fas fa-download"></i> Download</a>
+                    <a href="#" onclick="deleteFile('{{ file.name }}'); return false;"><i class="fas fa-trash"></i> Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p style="text-align: center; color: var(--gray); margin-top: 40px;">No documents uploaded yet.</p>
+    {% endif %}
+</div>
+
+<script>
+function deleteFile(filename) {
+    if (confirm("Are you sure you want to delete '" + filename + "'?")) {
+        fetch("/delete_file/" + encodeURIComponent(filename), { method: "POST" })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert("Error deleting file: " + data.error);
+                }
+            });
+    }
+}
+</script>
+{% endblock %}

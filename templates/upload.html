@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.upload-container { max-width: 900px; margin: 0 auto; }
+.page-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.page-subtitle { text-align: center; color: var(--gray); margin-bottom: 40px; font-size: 1.1rem; }
+.upload-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 40px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,0.8);
+    text-align: center;
+    transition: var(--transition);
+}
+.upload-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); }
+.upload-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.upload-text { margin-bottom: 30px; color: var(--gray); font-size: 1.1rem; }
+.upload-area {
+    border: 2px dashed #CBD5E0;
+    border-radius: 16px;
+    padding: 40px 20px;
+    margin-bottom: 25px;
+    transition: var(--transition);
+    background: rgba(255,255,255,0.5);
+    cursor: pointer;
+}
+.upload-area:hover,
+.upload-area.dragover { border-color: var(--primary); background: rgba(123,104,238,0.05); }
+.upload-area i { font-size: 3rem; color: var(--primary); }
+.file-input { display: none; }
+.btn-upload {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 15px 30px;
+    box-shadow: 0 4px 15px rgba(123,104,238,0.3);
+    transition: var(--transition);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+.btn-upload:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(123,104,238,0.4); }
+@media (max-width: 768px) {
+    .upload-container { padding: 0 15px; }
+    .page-title { font-size: 2rem; }
+    .upload-card { padding: 20px; }
+}
+</style>
+
+<div class="upload-container">
+    <h1 class="page-title">Document Upload</h1>
+    <p class="page-subtitle">Upload your documents for AI analysis and processing</p>
+    <div class="upload-card">
+        <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <h2>Upload Your Files</h2>
+        <p class="upload-text">Supported formats: PDF, TXT, DOC, DOCX. Max size: 10MB.</p>
+        <div class="upload-area" id="uploadArea">
+            <i class="fas fa-file-upload"></i>
+            <p>Drag & drop your files here, or click to browse.</p>
+            <input type="file" id="fileInput" class="file-input" name="file" accept=".pdf,.txt,.doc,.docx" required>
+        </div>
+        <form id="uploadForm" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+            <input type="file" id="formFile" name="file" style="display: none;">
+            <button type="button" class="btn-upload" onclick="document.getElementById('formFile').click()">
+                <i class="fas fa-folder-open"></i>
+                Browse Files
+            </button>
+        </form>
+    </div>
+    <!-- No files list here! -->
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const uploadArea = document.getElementById("uploadArea");
+    const fileInput = document.getElementById("fileInput");
+    const formFile = document.getElementById("formFile");
+    const uploadForm = document.getElementById("uploadForm");
+
+    // Click on upload area to trigger file input
+    uploadArea.addEventListener("click", function() {
+        formFile.click();
+    });
+
+    // Handle file selection
+    formFile.addEventListener("change", function() {
+        if (this.files.length > 0) {
+            uploadForm.submit();
+        }
+    });
+
+    // Drag and drop functionality
+    uploadArea.addEventListener("dragover", function(e) {
+        e.preventDefault();
+        this.classList.add("dragover");
+    });
+    uploadArea.addEventListener("dragleave", function() {
+        this.classList.remove("dragover");
+    });
+    uploadArea.addEventListener("drop", function(e) {
+        e.preventDefault();
+        this.classList.remove("dragover");
+        if (e.dataTransfer.files.length > 0) {
+            formFile.files = e.dataTransfer.files;
+            uploadForm.submit();
+        }
+    });
+});
+</script>
+{% endblock %}

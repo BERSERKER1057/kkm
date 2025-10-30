@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .chat-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        font-family: 'Poppins', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+        text-align: center;
+        color: var(--gray);
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    .chat-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 12px;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        border: 1.5px solid #E2E8F0;
+        background: #FFFFFF;
+        font-size: 1rem;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        transition: var(--transition);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+    }
+
+    .btn-chat {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        width: 100%;
+        padding: 15px 0;
+        box-shadow: 0 4px 15px rgba(123, 104, 238, 0.3);
+        transition: var(--transition);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-chat:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(123, 104, 238, 0.4);
+    }
+
+    .response-block {
+        background: linear-gradient(135deg, #F0F4FF 0%, #F8FAFF 100%);
+        border-radius: 16px;
+        padding: 25px;
+        margin-top: 25px;
+        border-left: 4px solid var(--accent);
+        animation: fadeIn 0.5s ease;
+    }
+
+    .response-header {
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .response-text {
+        font-size: 1.05rem;
+        color: var(--dark);
+        line-height: 1.7;
+    }
+
+    .user-info {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        padding: 15px 20px;
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+
+    .logout-btn {
+        background: transparent;
+        border: 1px solid var(--gray);
+        border-radius: 8px;
+        color: var(--dark);
+        padding: 8px 15px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+        background: var(--secondary);
+        color: white;
+        border-color: var(--secondary);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .chat-container {
+            padding: 0 15px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .chat-card {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="chat-container">
+    <h1 class="page-title">NexusAI Assistant</h1>
+    <p class="page-subtitle">Ask questions and get intelligent responses powered by AI</p>
+    
+    <div class="user-info">
+        <div class="user-avatar">
+            {{ username[0]|upper }}
+        </div>
+        <span>Welcome, <strong>{{ username }}</strong></span>
+        <a href="{{ url_for('logout') }}" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+
+    <div class="chat-card">
+        <form method="POST">
+            <label for="question" class="form-label">
+                <i class="fas fa-question-circle"></i> Your Question
+            </label>
+            <input
+                type="text"
+                id="question"
+                name="question"
+                class="form-control"
+                placeholder="Type your question here..."
+                required
+                autocomplete="off"
+            />
+            <button type="submit" class="btn-chat">
+                <i class="fas fa-paper-plane"></i> Ask NexusAI
+            </button>
+        </form>
+        
+        {% if answer %}
+        <div class="response-block">
+            <div class="response-header">
+                <i class="fas fa-robot"></i> AI Response
+            </div>
+            <div class="response-text">{{ answer }}</div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="card">
+        <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <i class="fas fa-lightbulb"></i> Tips for Better Responses
+        </h3>
+        <ul style="padding-left: 20px;">
+            <li>Be specific and clear in your questions</li>
+            <li>Ask one question at a time for more focused answers</li>
+            <li>Provide context when needed</li>
+            <li>Use proper grammar and punctuation</li>
+            <li>Upload relevant documents for more accurate answers</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

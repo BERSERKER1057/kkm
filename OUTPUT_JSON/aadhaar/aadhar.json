@@ -1,0 +1,10 @@
+{
+    "document_type": "aadhaar",
+    "fields": {
+        "name": "Senthilkumar",
+        "dob": "11/05/2005",
+        "gender": "MALE",
+        "id_number": "912948127747",
+        "address": "361/2, Periyar Nagar, Chinnakollappatty, Salem, PO: Kannankurichi, DIST: Tamil Nadu - 636008"
+    }
+}

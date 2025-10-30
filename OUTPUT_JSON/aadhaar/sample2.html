@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chatbot - Personal Data Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex flex-col h-screen">
+  <!-- Header -->
+  <header class="bg-indigo-600 text-white text-center py-4 shadow-md">
+    <h1 class="text-2xl font-semibold">AI Chatbot – Personal Data Retrieval</h1>
+  </header>
+
+  <!-- Chat Container -->
+  <main id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4">
+    <!-- Example Message -->
+    <div class="flex justify-start">
+      <div class="bg-white text-gray-800 p-3 rounded-2xl shadow-sm max-w-xs">
+        👋 Hello! I’m your Personal Data Assistant. How can I help you today?
+      </div>
+    </div>
+  </main>
+
+  <!-- Input Area -->
+  <div class="bg-white border-t border-gray-200 p-3 flex items-center">
+    <input id="user-input" type="text" placeholder="Ask me anything..."
+      class="flex-1 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+    <button id="send-btn"
+      class="ml-3 bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">
+      Send
+    </button>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const sendBtn = document.getElementById("send-btn");
+    const userInput = document.getElementById("user-input");
+    const chatContainer = document.getElementById("chat-container");
+
+    function addMessage(message, sender = "user") {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("flex", sender === "user" ? "justify-end" : "justify-start");
+
+      const bubble = document.createElement("div");
+      bubble.classList.add(
+        "p-3", "rounded-2xl", "max-w-xs", "shadow-sm",
+        sender === "user"
+          ? "bg-indigo-600", "text-white"
+          : "bg-white", "text-gray-800"
+      );
+      bubble.textContent = message;
+
+      msgDiv.appendChild(bubble);
+      chatContainer.appendChild(msgDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    sendBtn.addEventListener("click", () => {
+      const text = userInput.value.trim();
+      if (!text) return;
+      addMessage(text, "user");
+      userInput.value = "";
+
+      // Simulate AI reply (replace with backend fetch later)
+      setTimeout(() => {
+        addMessage("🔍 Retrieving your personal data for: " + text);
+      }, 1000);
+    });
+
+    userInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendBtn.click();
+    });
+  </script>
+</body>
+</html>
